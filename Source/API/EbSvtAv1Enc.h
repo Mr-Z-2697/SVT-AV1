@@ -1023,7 +1023,7 @@ typedef struct EbSvtAv1EncConfiguration {
 
 	// clang-format off
     /*Add 128 Byte Padding to Struct to avoid changing the size of the public configuration struct*/
-    uint8_t padding[128 - (sizeof(uint8_t) * 2)
+    uint8_t padding[128 - (sizeof(uint8_t) * 3)
 #if FTR_RTC_MODE
         - sizeof(bool)
 #endif

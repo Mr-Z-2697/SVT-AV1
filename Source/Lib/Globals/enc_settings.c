@@ -1102,7 +1102,7 @@ EbErrorType svt_av1_set_default_params(EbSvtAv1EncConfiguration *config_ptr) {
     config_ptr->sharpness                         = 0;
     config_ptr->lossless                          = false;
     config_ptr->avif                              = false;
-    config_ptr->qp_scale_compress_strength        = 1;
+    config_ptr->qp_scale_compress_strength        = 0;
     return return_error;
 }
 
@@ -1247,7 +1247,7 @@ void svt_av1_print_lib_params(SequenceControlSet *scs) {
         default: break;
         }
 
-        SVT_INFO("QP scale compress strength \t\t\t: %d\n",
+        SVT_INFO("SVT [config]: QP scale compress strength \t\t\t\t\t: %d\n",
                  config->qp_scale_compress_strength);
     }
 #if CLN_SEG_COUNTS
