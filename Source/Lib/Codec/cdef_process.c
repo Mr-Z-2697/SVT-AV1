@@ -568,6 +568,7 @@ static void cdef_seg_search(PictureControlSet *pcs, SequenceControlSet *scs, uin
     }
 }
 
+#if !FIX_CDEF_RACE_COND
 const uint32_t disable_cdef_th[4][INPUT_SIZE_COUNT] = {{0, 0, 0, 0, 0, 0, 0},
                                                        {100, 200, 500, 800, 1000, 1000, 1000},
                                                        {900, 1000, 2000, 3000, 4000, 4000, 4000},
@@ -621,7 +622,7 @@ static void    me_based_cdef_skip(PictureControlSet *pcs, uint16_t prev_cdef_dis
             *do_cdef = false;
     }
 }
-
+#endif
 /******************************************************
  * CDEF Kernel
  ******************************************************/
@@ -656,11 +657,13 @@ void *svt_aom_cdef_kernel(void *input_ptr) {
         bool       is_16bit = scs->is_16bit_pipeline;
         Av1Common *cm       = pcs->ppcs->av1_cm;
         frm_hdr             = &pcs->ppcs->frm_hdr;
-        pcs->cdef_dist_dev  = -1;
-        bool do_cdef        = true;
+#if !FIX_CDEF_RACE_COND
+        pcs->cdef_dist_dev = -1;
+        bool do_cdef       = true;
         me_based_cdef_skip(pcs, pcs->ppcs->cdef_recon_ctrls.prev_cdef_dist_th, &do_cdef);
         if (!do_cdef)
             pcs->ppcs->cdef_level = 0;
+#endif
         CdefSearchControls *cdef_search_ctrls = &pcs->ppcs->cdef_search_ctrls;
         if (!cdef_search_ctrls->use_reference_cdef_fs) {
             if (scs->seq_header.cdef_level && pcs->ppcs->cdef_level) {
@@ -672,7 +675,9 @@ void *svt_aom_cdef_kernel(void *input_ptr) {
 
         pcs->tot_seg_searched_cdef++;
         if (pcs->tot_seg_searched_cdef == pcs->cdef_segments_total_count) {
-            // SVT_LOG("    CDEF all seg here  %i\n", pcs->picture_number);
+#if FIX_CDEF_RACE_COND
+            pcs->cdef_dist_dev = -1;
+#endif
             if (scs->seq_header.cdef_level && pcs->ppcs->cdef_level) {
                 finish_cdef_search(pcs);
                 if (ppcs->enable_restoration || pcs->ppcs->is_ref || scs->static_config.recon_enabled) {

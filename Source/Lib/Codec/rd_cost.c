@@ -2108,7 +2108,12 @@ void svt_aom_full_cost(PictureControlSet *pcs, ModeDecisionContext *ctx, struct 
     assert(IMPLIES(is_inter_mode(cand_bf->cand->block_mi.mode), skip_tx_size_bits == 0));
 
     // Decide if block should be signalled as skip (send no coeffs)
+#if FIX_LOSSLESS_MODE
+    if (!svt_av1_is_lossless_segment(pcs, ctx->blk_ptr->segment_id) && ctx->blk_skip_decision &&
+        cand_bf->block_has_coeff && is_inter_mode(cand_bf->cand->block_mi.mode)) {
+#else
     if (ctx->blk_skip_decision && cand_bf->block_has_coeff && is_inter_mode(cand_bf->cand->block_mi.mode)) {
+#endif
 #else
     uint64_t non_skip_tx_size_bits = 0, skip_tx_size_bits = 0;
     if (!ctx->shut_fast_rate && pcs->ppcs->frm_hdr.tx_mode == TX_MODE_SELECT) {
