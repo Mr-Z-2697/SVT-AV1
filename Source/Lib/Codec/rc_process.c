@@ -832,9 +832,9 @@ static int crf_qindex_calc(PictureControlSet *pcs, RATE_CONTROL *rc, int qindex)
             rc->arf_q = MAX(rc->arf_q, quantizer_to_qindex[pcs->ref_pic_qp_array[1][0]]);
     }
 #if DEBUG_QP_SCALING
-    printf("Frame %llu, temp. level %i, active worst quality %i, qstep based calc %i\n",
+    SVT_DEBUG("Frame %llu, temp. level %i, active worst quality %i, qstep based calc %i\n",
            pcs->picture_number, pcs->temporal_layer_index, active_worst_quality, use_qstep_based_q_calc);
-    printf("  ref1 q %i, ref2 q %i, arf q %i\n", (pcs->ref_pic_qp_array[0][0] << 2) + 2, (pcs->slice_type == B_SLICE) ? (pcs->ref_pic_qp_array[1][0] << 2) + 2 : 0, rc->arf_q);
+    SVT_DEBUG("  ref1 q %i, ref2 q %i, arf q %i\n", (pcs->ref_pic_qp_array[0][0] << 2) + 2, (pcs->slice_type == B_SLICE) ? (pcs->ref_pic_qp_array[1][0] << 2) + 2 : 0, rc->arf_q);
 #endif
     // r0 scaling
     // TPL may only look at a subset of available pictures in tpl group, which may affect the r0 calcuation.
@@ -852,7 +852,7 @@ static int crf_qindex_calc(PictureControlSet *pcs, RATE_CONTROL *rc, int qindex)
         rc->kf_boost  = AOMMIN(rc->kf_boost, max_boost);
 
 #if DEBUG_QP_SCALING
-        printf("  r0 %f, adj. factor %f, hier levels, %i, islice div factor %f, kf boost %i\n",
+        SVT_DEBUG("  r0 %f, adj. factor %f, hier levels, %i, islice div factor %f, kf boost %i\n",
                ppcs->r0, ppcs->tpl_ctrls.r0_adjust_factor, hierarchical_levels, tpl_hl_islice_div_factor[hierarchical_levels], rc->kf_boost);
 #endif
     } else {
@@ -871,7 +871,7 @@ static int crf_qindex_calc(PictureControlSet *pcs, RATE_CONTROL *rc, int qindex)
         rc->gfu_boost = get_gfu_boost_from_r0_lap(
             min_boost_factor, MAX_GFUBOOST_FACTOR, ppcs->r0, num_stats_required_for_gfu_boost);
 #if DEBUG_QP_SCALING
-        printf("  r0 %f, adj. factor %f, hier levels %i, frame div factor %f, gfu boost %i\n",
+        SVT_DEBUG("  r0 %f, adj. factor %f, hier levels %i, frame div factor %f, gfu boost %i\n",
                ppcs->r0, ppcs->tpl_ctrls.r0_adjust_factor, hierarchical_levels, tpl_hl_base_frame_div_factor[hierarchical_levels], rc->gfu_boost);
 #endif
     }
@@ -894,7 +894,7 @@ static int crf_qindex_calc(PictureControlSet *pcs, RATE_CONTROL *rc, int qindex)
 
         const int    qindex_from_qstep_ratio = svt_av1_get_q_index_from_qstep_ratio(qindex, qstep_ratio, bit_depth);
 #if DEBUG_QP_SCALING
-        printf("  qstep based calc: r0 weight %f, qstep ratio %f, qindex from qstep ratio %i\n", weight, qstep_ratio, qindex_from_qstep_ratio);
+        SVT_DEBUG("  qstep based calc: r0 weight %f, qstep ratio %f, qindex from qstep ratio %i\n", weight, qstep_ratio, qindex_from_qstep_ratio);
 #endif
         if (!frame_is_intra_only(ppcs))
             rc->arf_q = qindex_from_qstep_ratio;
@@ -919,7 +919,7 @@ static int crf_qindex_calc(PictureControlSet *pcs, RATE_CONTROL *rc, int qindex)
                 int w2 = non_base_qindex_weight_wq[hierarchical_levels];
 
 #if DEBUG_QP_SCALING
-                printf("  w1 %i, w2 %i, w1 ref intra pct %i\n", w1, w2, w1 + pcs->ref_intra_percentage);
+                SVT_DEBUG("  w1 %i, w2 %i, w1 ref intra pct %i\n", w1, w2, w1 + pcs->ref_intra_percentage);
 #endif
                 if (temporal_layer > 0 && pcs->ppcs->hierarchical_levels == 5) {
                     w1 += pcs->ref_intra_percentage;
@@ -929,22 +929,22 @@ static int crf_qindex_calc(PictureControlSet *pcs, RATE_CONTROL *rc, int qindex)
                     active_best_quality = (w1 * active_best_quality + (w2 * cq_level) + ((w1 + w2) / 2)) / (w1 + w2);
             }
 #if DEBUG_QP_SCALING
-            printf("  ref based calc: ref tmp layer %i, delta %i\n", ref_tmp_layer, tmp_layer_delta);
+            SVT_DEBUG("  ref based calc: ref tmp layer %i, delta %i\n", ref_tmp_layer, tmp_layer_delta);
 #endif
         }
     }
 
 #if DEBUG_QP_SCALING
-    printf("  before tmp layer adj: abq %i, awq %i, arf_q %i\n", active_best_quality, active_worst_quality, rc->arf_q);
+    SVT_DEBUG("  before tmp layer adj: abq %i, awq %i, arf_q %i\n", active_best_quality, active_worst_quality, rc->arf_q);
 #endif
     if (temporal_layer)
         active_best_quality = MAX(active_best_quality, rc->arf_q);
 #if DEBUG_QP_SCALING
-    printf("  after tmp layer adj: abq %i, awq %i\n", active_best_quality, active_worst_quality);
+    SVT_DEBUG("  after tmp layer adj: abq %i, awq %i\n", active_best_quality, active_worst_quality);
 #endif
     adjust_active_best_and_worst_quality(pcs, rc, rf_level, &active_worst_quality, &active_best_quality);
 #if DEBUG_QP_SCALING
-    printf("  after adj: abq %i, awq %i\n", active_best_quality, active_worst_quality);
+    SVT_DEBUG("  after adj: abq %i, awq %i\n", active_best_quality, active_worst_quality);
 #endif
     q = active_best_quality;
     clamp(q, active_best_quality, active_worst_quality);
@@ -1628,18 +1628,18 @@ void svt_variance_adjust_qp(PictureControlSet *pcs) {
     uint8_t max_qindex = MIN_Q_INDEX;
 
 #if DEBUG_VAR_BOOST_STATS
-    printf("TPL/CQP SB qindex, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
+    SVT_DEBUG("TPL/CQP SB qindex, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
 
     for (sb_addr = 0; sb_addr < sb_cnt; ++sb_addr) {
         sb_ptr = pcs->sb_ptr_array[sb_addr];
 
-        printf("%4d ", sb_ptr->qindex);
+        SVT_DEBUG("%4d ", sb_ptr->qindex);
 
         if (pcs->frame_width <= (sb_ptr->org_x + 64)) {
-            printf("\n");
+            SVT_DEBUG("\n");
         }
     }
-    printf("VAQ qindex boost, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
+    SVT_DEBUG("VAQ qindex boost, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
 #endif
     for (sb_addr = 0; sb_addr < sb_cnt; ++sb_addr) {
         sb_ptr = pcs->sb_ptr_array[sb_addr];
@@ -1653,10 +1653,10 @@ void svt_variance_adjust_qp(PictureControlSet *pcs) {
                                                  scs->static_config.variance_octile,
                                                  scs->static_config.variance_boost_curve);
 #if DEBUG_VAR_BOOST_STATS
-        printf("%4d ", boost);
+        SVT_DEBUG("%4d ", boost);
 
         if (pcs->frame_width <= (sb_ptr->org_x + 64)) {
-            printf("\n");
+            SVT_DEBUG("\n");
         }
 #endif
         // don't clamp qindex on valid deltaq range yet
@@ -1685,7 +1685,7 @@ void svt_variance_adjust_qp(PictureControlSet *pcs) {
              range);
 #endif
 #if DEBUG_VAR_BOOST_STATS
-    printf("Total CQP/CRF + VAQ qindex, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
+    SVT_DEBUG("Total CQP/CRF + VAQ qindex, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
 #endif
 
     // normalize sb qindex values
@@ -1700,10 +1700,10 @@ void svt_variance_adjust_qp(PictureControlSet *pcs) {
                                           MAX_Q_INDEX,
                                           ((int16_t)normalized_base_q_idx + (int16_t)offset));
 #if DEBUG_VAR_BOOST_STATS
-        printf("%4d ", normalized_qindex);
+        SVT_DEBUG("%4d ", normalized_qindex);
 
         if (pcs->frame_width <= (sb_ptr->org_x + 64)) {
-            printf("\n");
+            SVT_DEBUG("\n");
         }
 #endif
 
@@ -1731,7 +1731,7 @@ void svt_aom_sb_qp_derivation_tpl_la(PictureControlSet *pcs) {
         sb_cnt = pcs->sb_total_count;
     if (ppcs_ptr->r0_delta_qp_md && pcs->ppcs->tpl_is_valid == 1) {
 #if DEBUG_VAR_BOOST_STATS
-        printf("TPL qindex boost, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
+        SVT_DEBUG("TPL qindex boost, frame %llu, temp. level %i\n", pcs->picture_number, pcs->temporal_layer_index);
 #endif
         for (uint32_t sb_addr = 0; sb_addr < sb_cnt; ++sb_addr) {
             SuperBlock *sb_ptr = pcs->sb_ptr_array[sb_addr];
@@ -1742,9 +1742,9 @@ void svt_aom_sb_qp_derivation_tpl_la(PictureControlSet *pcs) {
             offset = AOMMAX(offset, -pcs->ppcs->frm_hdr.delta_q_params.delta_q_res * 9 * 4 + 1);
 
 #if DEBUG_VAR_BOOST_STATS
-            printf("%4d ", -offset);
+            SVT_DEBUG("%4d ", -offset);
             if (pcs->frame_width <= (sb_ptr->org_x + 64)) {
-                printf("\n");
+                SVT_DEBUG("\n");
             }
 #endif
             // read back SB qindex value, and add TPL boost on top
@@ -2998,7 +2998,7 @@ static void capped_crf_reencode(PictureParentControlSet *ppcs, int *const q) {
                                          tmp_q);
 #if DEBUG_RC_CAP_LOG
         if (ppcs->temporal_layer_index <= 0)
-            printf("Reencode POC:%lld\tQindex:%d\t%d\t%d\tWorseActive%d\t%d\t%d\n",
+            SVT_DEBUG("Reencode POC:%lld\tQindex:%d\t%d\t%d\tWorseActive%d\t%d\t%d\n",
                    ppcs->picture_number,
                    ppcs->frm_hdr.quantization_params.base_q_idx,
                    ppcs->projected_frame_size,
