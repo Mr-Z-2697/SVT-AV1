@@ -946,8 +946,8 @@ ConfigDescription config_entry_variance_boost[] = {
     {VARIANCE_OCTILE_TOKEN, "Octile for variance boost, default is 6 [1-8]"},
     {VARIANCE_BOOST_CURVE_TOKEN, "Curve for variance boost, default is 0 [0-2]"},
     // QP scale compress
-    {QP_SCALE_COMPRESS_STRENGTH_TOKEN, "[PSY] QP scale compress strength, default is 1 [0-3]"},
-	// Termination
+    {QP_SCALE_COMPRESS_STRENGTH_TOKEN, "QP scale compress strength, default is 1 [0-3]"},
+    // Termination
     {NULL, NULL}};
 
 ConfigEntry config_entry[] = {
@@ -1145,9 +1145,9 @@ ConfigEntry config_entry[] = {
     // Real-time Coding
     {RTC_TOKEN, "RealTime", set_cfg_generic_token},
 
-	// QP scale compression
+    // QP scale compression
     {QP_SCALE_COMPRESS_STRENGTH_TOKEN, "QpScaleCompressStrength", set_cfg_generic_token},
-	// Termination
+    // Termination
     {NULL, NULL, NULL}};
 
 /**********************************

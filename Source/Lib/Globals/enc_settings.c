@@ -1161,8 +1161,7 @@ void svt_av1_print_lib_params(SequenceControlSet *scs) {
         default: break;
         }
 
-        SVT_INFO("SVT [config]: QP scale compress strength \t\t\t\t\t: %d\n",
-                 config->qp_scale_compress_strength);
+        SVT_INFO("SVT [config]: QP scale compress strength \t\t\t\t\t: %d\n", config->qp_scale_compress_strength);
     }
 #if DEBUG_BUFFERS
     SVT_INFO("SVT [config]: INPUT / OUTPUT \t\t\t\t\t\t\t: %d / %d\n",
