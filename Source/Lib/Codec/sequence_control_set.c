@@ -327,8 +327,8 @@ EbErrorType copy_sequence_control_set(SequenceControlSet *dst, SequenceControlSe
     }
 #if FTR_SFRAME_POSI
     if (src->static_config.sframe_posi.sframe_posis) {
-        EB_NO_THROW_MALLOC(dst->static_config.sframe_posi.sframe_posis,
-                           sizeof(uint64_t) * src->static_config.sframe_posi.sframe_num);
+        EB_MALLOC(dst->static_config.sframe_posi.sframe_posis,
+                  sizeof(uint64_t) * src->static_config.sframe_posi.sframe_num);
         memcpy(dst->static_config.sframe_posi.sframe_posis,
                src->static_config.sframe_posi.sframe_posis,
                sizeof(uint64_t) * src->static_config.sframe_posi.sframe_num);

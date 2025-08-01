@@ -695,10 +695,6 @@ typedef struct EbSvtAv1EncConfiguration {
 #endif // FTR_SFRAME_FLEX
     */
     EbSFrameMode sframe_mode;
-#if FTR_SFRAME_POSI
-    /* Indicates where to insert an S-Frame, only available when sframe_mode is SFRAME_FLEXIBLE_ARF */
-    SvtAv1SFramePositions sframe_posi;
-#endif // FTR_SFRAME_POSI
 
     // End of individual tuning flags
 
@@ -967,10 +963,19 @@ typedef struct EbSvtAv1EncConfiguration {
      * Default is false.
      */
     bool rtc;
+
+#if FTR_SFRAME_POSI
+    /* @brief Indicates where to insert an S-Frame, only available when sframe_mode is SFRAME_FLEXIBLE_ARF */
+    SvtAv1SFramePositions sframe_posi;
+#endif // FTR_SFRAME_POSI
+
     // clang-format off
     /*Add 128 Byte Padding to Struct to avoid changing the size of the public configuration struct*/
     uint8_t padding[128 - (sizeof(uint8_t) * 2)
         - sizeof(bool)
+#if FTR_SFRAME_POSI
+        - sizeof(SvtAv1SFramePositions)
+#endif // FTR_SFRAME_POSI
     ];
     // clang-format on
 } EbSvtAv1EncConfiguration;
