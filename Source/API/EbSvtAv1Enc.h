@@ -28,7 +28,7 @@ extern "C" {
  * has been modified, and reset anytime the major API version has
  * been changed. Used to keep track if a field has been added or not.
  */
-#define SVT_AV1_ENC_ABI_VERSION 0
+#define SVT_AV1_ENC_ABI_VERSION 1
 #define HIERARCHICAL_LEVELS_AUTO ((uint32_t)(~0))
 #define MAX_HIERARCHICAL_LEVEL 6
 #define REF_LIST_MAX_DEPTH 4
@@ -41,6 +41,7 @@ extern "C" {
 #endif
 #endif /* ATTRIBUTE_PACKED */
 typedef enum ATTRIBUTE_PACKED {
+    ENC_MRS        = -3, // Highest quality research mode (slowest)
     ENC_MR         = -1, //Research mode with higher quality than M0
     ENC_M0         = 0,
     ENC_M1         = 1,
@@ -558,9 +559,12 @@ typedef struct EbSvtAv1EncConfiguration {
     /**
      * @brief Deblocking loop filter control
      *
-     * Default is true.
+     * 0: disabled
+     * 1: enabled
+     * 2: more accurate (slower)
      */
-    bool enable_dlf_flag;
+    uint8_t enable_dlf_flag;
+
     /* Film grain denoising the input picture
     * Flag to enable the denoising
     *
