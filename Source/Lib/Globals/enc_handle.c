@@ -4632,6 +4632,9 @@ static void copy_api_from_app(
 
     // QP scaling compression
     scs->static_config.qp_scale_compress_strength = config_struct->qp_scale_compress_strength;
+
+    // Extended CRF
+    scs->static_config.extended_crf_qindex_offset = config_struct->extended_crf_qindex_offset;
     return;
 }
 
