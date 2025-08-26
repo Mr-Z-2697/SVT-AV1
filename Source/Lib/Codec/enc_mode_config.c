@@ -1667,6 +1667,8 @@ void svt_aom_sig_deriv_multi_processes(SequenceControlSet *scs, PictureParentCon
     const bool              rtc_tune          = scs->static_config.rtc;
     const uint8_t           sc_class1         = pcs->sc_class1;
     const uint8_t           is_not_last_layer = !pcs->is_highest_layer;
+    const bool              allintra          = scs->allintra;
+    const bool              avif              = scs->static_config.avif;
     // Set GM ctrls assuming super-res is off for gm-pp need
     svt_aom_set_gm_controls(pcs, svt_aom_derive_gm_level(pcs, true));
 
@@ -1727,6 +1729,17 @@ void svt_aom_sig_deriv_multi_processes(SequenceControlSet *scs, PictureParentCon
     if (is_islice) {
         if (rtc_tune) {
             intrabc_level = 0;
+        } else if (avif || allintra) {
+            if (enc_mode <= ENC_M0)
+                intrabc_level = 1;
+            else if (enc_mode <= ENC_M2)
+                intrabc_level = 2;
+            else if (enc_mode <= ENC_M4)
+                intrabc_level = 4;
+            else if (enc_mode <= ENC_M7)
+                intrabc_level = 6;
+            else
+                intrabc_level = 0;
         } else {
             if (enc_mode <= ENC_M5)
                 intrabc_level = 1;
