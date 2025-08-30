@@ -56,6 +56,8 @@ extern "C" {
     int64_t svt_aom_highbd_sse_c(const uint8_t *a8, int a_stride, const uint8_t *b8, int b_stride, int width, int height);
     RTCD_EXTERN int64_t(*svt_aom_highbd_sse)(const uint8_t *a8, int a_stride, const uint8_t *b8, int b_stride, int width, int height);
 #endif
+    uint32_t svt_av1_get_crc32c_value_c(void *c, const uint8_t *buf, size_t len);
+    RTCD_EXTERN uint32_t(*svt_av1_get_crc32c_value)(void *c, const uint8_t *buf, size_t len);
     void svt_av1_wedge_compute_delta_squares_c(int16_t *d, const int16_t *a, const int16_t *b, int N);
     RTCD_EXTERN void(*svt_av1_wedge_compute_delta_squares)(int16_t *d, const int16_t *a, const int16_t *b, int N);
     int8_t svt_av1_wedge_sign_from_residuals_c(const int16_t *ds, const uint8_t *m, int N, int64_t limit);
@@ -248,8 +250,7 @@ extern "C" {
     RTCD_EXTERN uint64_t(*svt_search_one_dual)(int *lev0, int *lev1, int nb_strengths, uint64_t** mse[2], int sb_count, int start_gi, int end_gi);
     uint32_t svt_aom_mse16x16_c(const uint8_t *src_ptr, int32_t  source_stride, const uint8_t *ref_ptr, int32_t  recon_stride, uint32_t *sse);
     RTCD_EXTERN uint32_t(*svt_aom_mse16x16)(const uint8_t *src_ptr, int32_t  source_stride, const uint8_t *ref_ptr, int32_t  recon_stride, uint32_t *sse);
-    void svt_aom_quantize_b_c(const TranLow *coeff_ptr, int32_t stride,int32_t width, int32_t height, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr,const int16_t *quant_ptr, const int16_t *quant_shift_ptr,TranLow *qcoeff_ptr, TranLow *dqcoeff_ptr, const int16_t *dequant_ptr,uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan,const QmVal *qm_ptr, const QmVal *iqm_ptr, const int32_t log_scale);
-    void svt_aom_quantize_b_c_ii(const TranLow *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, TranLow *qcoeff_ptr, TranLow *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const QmVal *qm_ptr, const QmVal *iqm_ptr, const int32_t log_scale);
+    void svt_aom_quantize_b_c(const TranLow *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, TranLow *qcoeff_ptr, TranLow *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const QmVal *qm_ptr, const QmVal *iqm_ptr, const int32_t log_scale);
     RTCD_EXTERN void(*svt_aom_quantize_b)(const TranLow *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr,const int16_t *quant_ptr, const int16_t *quant_shift_ptr,TranLow *qcoeff_ptr, TranLow *dqcoeff_ptr, const int16_t *dequant_ptr,uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan,const QmVal *qm_ptr, const QmVal *iqm_ptr, const int32_t log_scale);
     RTCD_EXTERN void(*svt_av1_quantize_b_qm)(const TranLow *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr,const int16_t *quant_ptr, const int16_t *quant_shift_ptr,TranLow *qcoeff_ptr, TranLow *dqcoeff_ptr, const int16_t *dequant_ptr,uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan,const QmVal *qm_ptr, const QmVal *iqm_ptr, const int32_t log_scale);
 #if CONFIG_ENABLE_HIGH_BIT_DEPTH
