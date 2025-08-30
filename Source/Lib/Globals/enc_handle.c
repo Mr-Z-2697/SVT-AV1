@@ -2448,7 +2448,7 @@ static int32_t compute_default_intra_period(
     int32_t mini_gop_size              = (1 << (config->hierarchical_levels));
 
     intra_period                       = ((int)((fps + mini_gop_size) / mini_gop_size)*(mini_gop_size));
-    intra_period                       = intra_period * 5; // use a 5-sec gop by default.
+    intra_period                       = intra_period * 10; // use a 10-sec gop by default.
     if (config->intra_refresh_type == 1)
         intra_period -= 1;
 
