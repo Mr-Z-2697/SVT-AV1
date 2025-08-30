@@ -1324,6 +1324,26 @@ static EbErrorType str_to_uint(const char *nptr, uint32_t *out, char **nextptr) 
     return EB_ErrorNone;
 }
 
+#if RFCTR_PARSE_LIST
+static EbErrorType str_to_int8(const char *nptr, int8_t *out, char **nextptr) {
+    char   *endptr;
+    int32_t val;
+
+    val = strtol(nptr, &endptr, 0);
+
+    if (endptr == nptr || (!nextptr && *endptr))
+        return EB_ErrorBadParameter;
+
+    // check for the range
+    if (val < INT8_MIN || val > INT8_MAX)
+        return EB_ErrorBadParameter;
+
+    *out = (int8_t)val;
+    if (nextptr)
+        *nextptr = endptr;
+    return EB_ErrorNone;
+}
+
 static EbErrorType str_to_uint8(const char *nptr, uint8_t *out, char **nextptr) {
     char    *endptr;
     uint32_t val;
