@@ -3673,7 +3673,8 @@ void *svt_aom_rate_control_kernel(void *input_ptr) {
                             frm_hdr->quantization_params.base_q_idx = clamp_qindex(scs, new_qindex);
                         }
 
-                        if (scs->static_config.use_fixed_qindex_offsets) {
+                        if (scs->static_config.use_fixed_qindex_offsets ||
+                            scs->static_config.extended_crf_qindex_offset) {
                             int32_t qindex = scs->static_config.use_fixed_qindex_offsets == 1
                                 ? quantizer_to_qindex[scs_qp]
                                 : frm_hdr->quantization_params
@@ -3683,6 +3684,12 @@ void *svt_aom_rate_control_kernel(void *input_ptr) {
                                 qindex += scs->static_config.qindex_offsets[pcs->temporal_layer_index];
                             else
                                 qindex += scs->static_config.key_frame_qindex_offset;
+
+                            // Extended CRF range (63.25 - 70), add offset to all temporal layers to truncate QP scaling
+                            if (scs->static_config.qp == MAX_QP_VALUE &&
+                                scs->static_config.extended_crf_qindex_offset) {
+                                qindex += scs->static_config.extended_crf_qindex_offset;
+                            }
 
                             qindex = clamp_qindex(scs, qindex);
 
@@ -3722,6 +3729,7 @@ void *svt_aom_rate_control_kernel(void *input_ptr) {
                         chroma_qindex += scs->static_config.chroma_qindex_offsets[pcs->temporal_layer_index];
                     }
 
+                    chroma_qindex += scs->static_config.extended_crf_qindex_offset;
                     chroma_qindex = clamp_qindex(scs, chroma_qindex);
 
                     frm_hdr->quantization_params.delta_q_dc[1]     = frm_hdr->quantization_params.delta_q_dc[2] =

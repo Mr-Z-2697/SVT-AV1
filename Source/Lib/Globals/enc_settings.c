@@ -236,6 +236,11 @@ EbErrorType svt_av1_verify_settings(SequenceControlSet *scs) {
         return_error = EB_ErrorBadParameter;
     }
 
+    if ((config->enable_adaptive_quantization || config->variance_boost_strength) &&
+        config->extended_crf_qindex_offset > (7 * 4)) {
+        SVT_ERROR("Instance %u: %s must be [0 - %d]\n", channel_number + 1, "CRF", 70);
+        return_error = EB_ErrorBadParameter;
+    }
     if (config->qp > MAX_QP_VALUE) {
         SVT_ERROR("Instance %u: %s must be [0 - %d]\n",
                   channel_number + 1,
@@ -1065,6 +1070,7 @@ EbErrorType svt_av1_set_default_params(EbSvtAv1EncConfiguration *config_ptr) {
     config_ptr->lossless                          = false;
     config_ptr->avif                              = false;
     config_ptr->qp_scale_compress_strength        = 0;
+    config_ptr->extended_crf_qindex_offset        = 0;
 #if FTR_SFRAME_POSI
     config_ptr->sframe_posi.sframe_num   = 0;
     config_ptr->sframe_posi.sframe_posis = NULL;
@@ -1092,6 +1098,10 @@ static const char *level_to_str(unsigned in) {
     static char ret[313];
     snprintf(ret, 313, "%.1f", in / 10.0);
     return ret;
+}
+
+static double get_extended_crf(EbSvtAv1EncConfiguration *config_ptr) {
+    return (double)config_ptr->qp + (double)config_ptr->extended_crf_qindex_offset / 4;
 }
 
 void svt_av1_print_lib_params(SequenceControlSet *scs) {
@@ -1149,16 +1159,16 @@ void svt_av1_print_lib_params(SequenceControlSet *scs) {
                 if (config->max_bit_rate) {
                     SVT_INFO(
                         "SVT [config]: BRC mode / %s / max bitrate (kbps)\t\t\t: %s / %d / "
-                        "%d\n",
+                        "%.2f\n",
                         scs->tpl || scs->static_config.enable_variance_boost ? "rate factor" : "CQP Assignment",
                         scs->tpl || scs->static_config.enable_variance_boost ? "capped CRF" : "CQP",
-                        scs->static_config.qp,
+                        get_extended_crf(config),
                         (int)config->max_bit_rate / 1000);
                 } else {
-                    SVT_INFO("SVT [config]: BRC mode / %s \t\t\t\t\t: %s / %d \n",
+                    SVT_INFO("SVT [config]: BRC mode / %s \t\t\t\t\t: %s / %.2f \n",
                              scs->tpl || scs->static_config.enable_variance_boost ? "rate factor" : "CQP Assignment",
                              scs->tpl || scs->static_config.enable_variance_boost ? "CRF" : "CQP",
-                             scs->static_config.qp);
+                             get_extended_crf(config));
                 }
                 break;
             case SVT_AV1_RC_MODE_VBR:
@@ -1357,6 +1367,21 @@ static EbErrorType str_to_uint8(const char *nptr, uint8_t *out, char **nextptr) 
     return EB_ErrorNone;
 }
 
+static EbErrorType str_to_double(const char *nptr, double *out, char **nextptr) {
+    char  *endptr;
+    double val;
+
+    val = strtod(nptr, &endptr);
+
+    if (endptr == nptr || (!nextptr && *endptr))
+        return EB_ErrorBadParameter;
+
+    *out = val;
+    if (nextptr)
+        *nextptr = endptr;
+    return EB_ErrorNone;
+}
+
 #define str_to_int32 str_to_int
 #define str_to_uint32 str_to_uint
 
@@ -1519,16 +1544,24 @@ static EbErrorType str_to_bool(const char *nptr, bool *out) {
 }
 
 static EbErrorType str_to_crf(const char *nptr, EbSvtAv1EncConfiguration *config_struct) {
-    uint32_t    crf;
+    double      crf;
     EbErrorType return_error;
 
-    return_error = str_to_uint(nptr, &crf, NULL);
+    return_error = str_to_double(nptr, &crf, NULL);
+
     if (return_error == EB_ErrorBadParameter)
         return return_error;
+    if (crf < 0)
+        return EB_ErrorBadParameter;
 
-    config_struct->qp                           = crf;
+    uint32_t extended_q_index           = (uint32_t)(crf * 4);
+    uint32_t qp                         = AOMMIN(MAX_QP_VALUE, (uint32_t)crf);
+    uint32_t extended_crf_qindex_offset = extended_q_index - qp * 4;
+
+    config_struct->qp                           = qp;
     config_struct->rate_control_mode            = SVT_AV1_RC_MODE_CQP_OR_CRF;
     config_struct->enable_adaptive_quantization = 2;
+    config_struct->extended_crf_qindex_offset   = extended_crf_qindex_offset;
 
     return EB_ErrorNone;
 }

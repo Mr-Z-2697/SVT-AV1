@@ -967,6 +967,12 @@ typedef struct EbSvtAv1EncConfiguration {
     */
     uint8_t qp_scale_compress_strength;
 
+    /* @brief Q index for extended CRF support
+     * Value is internally determined by CRF parameter value
+     * Default is 0 if CRF is an integer
+     */
+    uint8_t extended_crf_qindex_offset;
+
 #if FTR_SFRAME_POSI
     /* @brief Indicates where to insert an S-Frame, only available when sframe_mode is SFRAME_FLEXIBLE_ARF */
     SvtAv1SFramePositions sframe_posi;
@@ -981,7 +987,7 @@ typedef struct EbSvtAv1EncConfiguration {
 
     // clang-format off
     /*Add 128 Byte Padding to Struct to avoid changing the size of the public configuration struct*/
-    uint8_t padding[128 - (sizeof(uint8_t) * 3)
+    uint8_t padding[128 - (sizeof(uint8_t) * 4)
         - sizeof(bool)
 #if FTR_SFRAME_POSI
         - sizeof(SvtAv1SFramePositions)
