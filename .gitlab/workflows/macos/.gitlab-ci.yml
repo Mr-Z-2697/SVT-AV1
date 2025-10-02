@@ -13,8 +13,7 @@
   tags:
     - macos
     - shell
-  variables:
-    !reference [.compiler-variables]
+  variables: !reference [.compiler-variables]
   script: !reference [.compiler-script]
 
 .macos-test-base:

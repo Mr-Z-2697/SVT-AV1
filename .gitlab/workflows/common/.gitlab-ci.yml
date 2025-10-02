@@ -67,8 +67,8 @@
     -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
     -DCMAKE_MODULE_LINKER_FLAGS="$LDFLAGS"
     $EXTRA_CMAKE_FLAGS || {
-      cat Build/CMakeFiles/CMakeError.log;
-      exit 1;
+    cat Build/CMakeFiles/CMakeError.log;
+    exit 1;
     }
   - time cmake --build Build --config "$CMAKE_BUILD_TYPE" ${TARGET:+--target $TARGET}
   - ccache -s
