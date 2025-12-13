@@ -338,7 +338,9 @@ void mdc_init_qp_update(PictureControlSet *pcs) {
     pcs->intra_coded_area = 0;
     pcs->skip_coded_area  = 0;
     pcs->hp_coded_area    = 0;
-
+#if OPT_CYCLIC_REFRESH
+    pcs->avg_cnt_zeromv = 0;
+#endif
     // TODO: do we need to update the GM fields?
     set_global_motion_field(pcs);
 
@@ -754,9 +756,11 @@ static void update_cdef_filters_on_ref_info(PictureControlSet *pcs) {
     CdefSearchControls *cdef_ctrls = &pcs->ppcs->cdef_search_ctrls;
     if (cdef_ctrls->use_reference_cdef_fs) {
         if (pcs->slice_type != I_SLICE) {
-            const bool rtc_tune   = pcs->scs->static_config.rtc;
-            uint8_t    lowest_sg  = TOTAL_STRENGTHS - 1;
-            uint8_t    highest_sg = 0;
+#if !TUNE_RTC_RA_PRESETS
+            const bool rtc_tune = pcs->scs->static_config.rtc;
+#endif
+            uint8_t lowest_sg  = TOTAL_STRENGTHS - 1;
+            uint8_t highest_sg = 0;
             // Determine luma pred filter
             // Add filter from list0
             EbReferenceObject *ref_obj_l0 = (EbReferenceObject *)pcs->ref_pic_ptr_array[REF_LIST_0][0]->object_ptr;
@@ -776,6 +780,11 @@ static void update_cdef_filters_on_ref_info(PictureControlSet *pcs) {
                         highest_sg = ref_obj_l1->ref_cdef_strengths[0][fs];
                 }
             }
+#if TUNE_RTC_RA_PRESETS
+            int8_t mid_filter     = MIN(63, MAX(0, (lowest_sg + highest_sg) / 2));
+            cdef_ctrls->pred_y_f  = mid_filter;
+            cdef_ctrls->pred_uv_f = 0;
+#else
             if (rtc_tune) {
                 int8_t mid_filter     = MIN(63, MAX(0, MAX(lowest_sg, highest_sg)));
                 cdef_ctrls->pred_y_f  = mid_filter;
@@ -785,6 +794,7 @@ static void update_cdef_filters_on_ref_info(PictureControlSet *pcs) {
                 cdef_ctrls->pred_y_f  = mid_filter;
                 cdef_ctrls->pred_uv_f = 0;
             }
+#endif
             cdef_ctrls->first_pass_fs_num          = 0;
             cdef_ctrls->default_second_pass_fs_num = 0;
             // Set cdef to off if pred is.
@@ -993,6 +1003,9 @@ void *svt_aom_mode_decision_configuration_kernel(void *input_ptr) {
         pcs->intra_coded_area = 0;
         pcs->skip_coded_area  = 0;
         pcs->hp_coded_area    = 0;
+#if OPT_CR_CTRL
+        pcs->avg_cnt_zeromv = 0;
+#endif
         // Init block selection
 #if !CLN_MDC_FUNCS
         // Set reference sg ep
@@ -1155,10 +1168,12 @@ void *svt_aom_mode_decision_configuration_kernel(void *input_ptr) {
         // these cannot be controlled at the block level, so they are invoked even if only one segment is marked as lossless
         if (frm_hdr
                 ->coded_lossless /*|| (frm_hdr->segmentation_params.segmentation_enabled && has_lossless_segment)*/) {
-            pcs->mimic_only_tx_4x4                      = 1;
-            frm_hdr->tx_mode                            = TX_MODE_SELECT;
-            pcs->pic_depth_removal_level                = 0;
-            pcs->pic_depth_removal_level_rtc            = 0;
+            pcs->mimic_only_tx_4x4       = 1;
+            frm_hdr->tx_mode             = TX_MODE_SELECT;
+            pcs->pic_depth_removal_level = 0;
+#if !OPT_DR_RTC
+            pcs->pic_depth_removal_level_rtc = 0;
+#endif
             pcs->pic_block_based_depth_refinement_level = 0;
             pcs->pic_lpd0_lvl                           = 0;
             pcs->pic_lpd1_lvl                           = 0;
