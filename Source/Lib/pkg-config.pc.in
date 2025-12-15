@@ -6,8 +6,9 @@ libdir=@SVT_AV1_LIBDIR@
 Name: SvtAv1Enc
 Description: SVT (Scalable Video Technology) for AV1 encoder library
 Version: @ENC_VERSION_MAJOR@.@ENC_VERSION_MINOR@.@ENC_VERSION_PATCH@
-Requires.private: @REQUIRES_PRIVATE@
-Libs: -L${libdir} -lSvtAv1Enc
-Libs.private: @LIBS_PRIVATE@
-Cflags: -I${includedir}/svt-av1@ENC_PKG_CONFIG_EXTRA_CFLAGS@
-Cflags.private: -UEB_DLL
+Requires: @PC_REQUIRES_PUBLIC@
+Requires.private: @PC_REQUIRES_PRIVATE@
+Libs: @PC_LIBS_PUBLIC@
+Libs.private: @PC_LIBS_PRIVATE@
+Cflags: @PC_CFLAGS_PUBLIC@
+Cflags.private: @PC_CFLAGS_PRIVATE@
