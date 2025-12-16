@@ -4190,10 +4190,14 @@ static void set_param_based_on_input(SequenceControlSet *scs)
 #endif
         if (scs->input_resolution <= INPUT_SIZE_1080p_RANGE) {
 #if TUNE_STILL_IMAGE_0
+#if TUNE_STILL_IMAGE
+            if (scs->static_config.enc_mode <= ENC_M0) {
+#else
 #if TUNE_STILL_IMAGE_1
             if (scs->static_config.enc_mode <= ENC_M3) {
 #else
             if (scs->static_config.enc_mode <= ENC_M8) {
+#endif
 #endif
                 scs->super_block_size = 128;
             }
