@@ -3891,6 +3891,15 @@ void set_qp_based_th_scaling_ctrls(SequenceControlSet *scs) {
             scs->qp_based_th_scaling_ctrls.nic_pruning_qp_based_th_scaling = 1;
             scs->qp_based_th_scaling_ctrls.pme_qp_based_th_scaling         = 0;
             scs->qp_based_th_scaling_ctrls.txt_qp_based_th_scaling         = 1;
+#if OPT_DEPTH_REMOVAL
+            scs->qp_based_th_scaling_ctrls.i_depth_removal_qp_based_th_scaling = 0;
+#endif
+#if OPT_CAP_MAX_BLOCK_SIZE
+            scs->qp_based_th_scaling_ctrls.cap_max_size_qp_based_th_scaling = 0;
+#endif
+#if OPT_LPD0_PER_BLK
+            scs->qp_based_th_scaling_ctrls.var_ski_sub_depth_qp_based_th_scaling = 0;
+#endif
 #if TUNE_STILL_IMAGE_1
         } else if (scs->static_config.enc_mode <= ENC_M5) {
 #else
@@ -3906,6 +3915,15 @@ void set_qp_based_th_scaling_ctrls(SequenceControlSet *scs) {
             scs->qp_based_th_scaling_ctrls.nic_pruning_qp_based_th_scaling = 1;
             scs->qp_based_th_scaling_ctrls.pme_qp_based_th_scaling         = 0;
             scs->qp_based_th_scaling_ctrls.txt_qp_based_th_scaling         = 1;
+#if OPT_DEPTH_REMOVAL
+            scs->qp_based_th_scaling_ctrls.i_depth_removal_qp_based_th_scaling = 0;
+#endif
+#if OPT_CAP_MAX_BLOCK_SIZE
+            scs->qp_based_th_scaling_ctrls.cap_max_size_qp_based_th_scaling = 0;
+#endif
+#if OPT_LPD0_PER_BLK
+            scs->qp_based_th_scaling_ctrls.var_ski_sub_depth_qp_based_th_scaling = 0;
+#endif
 #else
         if (scs->static_config.enc_mode <= ENC_M3) {
             scs->qp_based_th_scaling_ctrls.tf_me_qp_based_th_scaling       = 0;
@@ -3930,6 +3948,15 @@ void set_qp_based_th_scaling_ctrls(SequenceControlSet *scs) {
             scs->qp_based_th_scaling_ctrls.nic_pruning_qp_based_th_scaling = 1;
             scs->qp_based_th_scaling_ctrls.pme_qp_based_th_scaling         = 1;
             scs->qp_based_th_scaling_ctrls.txt_qp_based_th_scaling         = 1;
+#if OPT_DEPTH_REMOVAL
+            scs->qp_based_th_scaling_ctrls.i_depth_removal_qp_based_th_scaling = 1;
+#endif
+#if OPT_CAP_MAX_BLOCK_SIZE
+            scs->qp_based_th_scaling_ctrls.cap_max_size_qp_based_th_scaling = 1;
+#endif
+#if OPT_LPD0_PER_BLK
+            scs->qp_based_th_scaling_ctrls.var_ski_sub_depth_qp_based_th_scaling = 1;
+#endif
         }
     }
     else {
@@ -3944,6 +3971,15 @@ void set_qp_based_th_scaling_ctrls(SequenceControlSet *scs) {
             scs->qp_based_th_scaling_ctrls.nic_pruning_qp_based_th_scaling = 0;
             scs->qp_based_th_scaling_ctrls.pme_qp_based_th_scaling         = 0;
             scs->qp_based_th_scaling_ctrls.txt_qp_based_th_scaling         = 0;
+#if OPT_DEPTH_REMOVAL
+            scs->qp_based_th_scaling_ctrls.i_depth_removal_qp_based_th_scaling = 0;
+#endif
+#if OPT_CAP_MAX_BLOCK_SIZE
+            scs->qp_based_th_scaling_ctrls.cap_max_size_qp_based_th_scaling = 0;
+#endif
+#if OPT_LPD0_PER_BLK
+            scs->qp_based_th_scaling_ctrls.var_ski_sub_depth_qp_based_th_scaling = 0;
+#endif
         } else {
             scs->qp_based_th_scaling_ctrls.tf_me_qp_based_th_scaling       = 1;
             scs->qp_based_th_scaling_ctrls.tf_ref_qp_based_th_scaling      = 1;
@@ -3955,6 +3991,15 @@ void set_qp_based_th_scaling_ctrls(SequenceControlSet *scs) {
             scs->qp_based_th_scaling_ctrls.nic_pruning_qp_based_th_scaling = 1;
             scs->qp_based_th_scaling_ctrls.pme_qp_based_th_scaling         = 1;
             scs->qp_based_th_scaling_ctrls.txt_qp_based_th_scaling         = 1;
+#if OPT_DEPTH_REMOVAL
+            scs->qp_based_th_scaling_ctrls.i_depth_removal_qp_based_th_scaling = 0;
+#endif
+#if OPT_CAP_MAX_BLOCK_SIZE
+            scs->qp_based_th_scaling_ctrls.cap_max_size_qp_based_th_scaling = 0;
+#endif
+#if OPT_LPD0_PER_BLK
+            scs->qp_based_th_scaling_ctrls.var_ski_sub_depth_qp_based_th_scaling = 0;
+#endif
         }
     }
 }
