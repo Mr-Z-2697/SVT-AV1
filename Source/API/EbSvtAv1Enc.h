@@ -181,9 +181,15 @@ typedef enum SvtAv1PredStructure {
 } SvtAv1PredStructure;
 #endif
 
+#if CLN_AQ_MODE
+/* Indicates what rate control mode is used.
+ * Currently, cqp is distinguised by setting aq_mode to 0
+ */
+#else
 /* Indicates what rate control mode is used.
  * Currently, cqp is distinguised by setting enable_adaptive_quantization to 0
  */
+#endif
 typedef enum SvtAv1RcMode {
     SVT_AV1_RC_MODE_CQP_OR_CRF = 0, // constant quantization parameter/constant rate factor
     SVT_AV1_RC_MODE_VBR        = 1, // variable bit rate
@@ -623,11 +629,21 @@ typedef struct EbSvtAv1EncConfiguration {
      * Default depends on rate control mode.*/
     uint32_t look_ahead_distance;
 
+#if CLN_REMOVE_TPL_SIG
+#if !SVT_AV1_CHECK_VERSION(4, 0, 0) // to be deprecated in v4.0
     /* Enable TPL in look ahead
      * 0 = disable TPL in look ahead
      * 1 = enable TPL in look ahead
      * Default is 0  */
     uint8_t enable_tpl_la;
+#endif
+#else
+    /* Enable TPL in look ahead
+     * 0 = disable TPL in look ahead
+     * 1 = enable TPL in look ahead
+     * Default is 0  */
+    uint8_t enable_tpl_la;
+#endif
 
     /* recode_loop indicates the recode levels,
      * DISALLOW_RECODE = 0, No recode.
@@ -645,11 +661,29 @@ typedef struct EbSvtAv1EncConfiguration {
     * Default is 0. */
     uint32_t screen_content_mode;
 
+#if CLN_AQ_MODE
+#if SVT_AV1_CHECK_VERSION(4, 0, 0)
+    /* Adaptive quantization used within a frame.
+     *
+     * For rc_mode 0, setting this to:
+     * 0: use CQP mode
+     * 1: variance-based segmentation
+     * 2: CRF (per-frame QPs and per-SB delta-QPs derived using TPL) */
+    uint8_t aq_mode;
+#else
     /* Enable adaptive quantization within a frame using segmentation.
      *
      * For rate control mode 0, setting this to 0 will use CQP mode, else CRF mode will be used.
      * Default is 2. */
     uint8_t enable_adaptive_quantization;
+#endif
+#else
+    /* Enable adaptive quantization within a frame using segmentation.
+     *
+     * For rate control mode 0, setting this to 0 will use CQP mode, else CRF mode will be used.
+     * Default is 2. */
+    uint8_t enable_adaptive_quantization;
+#endif
 
     /**
      * @brief Enable use of ALT-REF (temporally filtered) frames.
@@ -700,6 +734,8 @@ typedef struct EbSvtAv1EncConfiguration {
 
     // End of individual tuning flags
 
+#if CLN_REMOVE_CHANNELS
+#if !SVT_AV1_CHECK_VERSION(4, 0, 0) // to be deprecated in v4.0
     // Application Specific parameters
 
     /**
@@ -719,7 +755,28 @@ typedef struct EbSvtAv1EncConfiguration {
      * Default is 1.
      */
     uint32_t active_channel_count;
+#endif
+#else
+    // Application Specific parameters
 
+    /**
+     * @brief API signal for the library to know the channel ID (used for pinning to cores).
+     *
+     * Min value is 0.
+     * Max value is 0xFFFFFFFF.
+     * Default is 0.
+     */
+    uint32_t channel_id;
+
+    /**
+     * @brief API signal for the library to know the active number of channels being encoded simultaneously.
+     *
+     * Min value is 1.
+     * Max value is 0xFFFFFFFF.
+     * Default is 1.
+     */
+    uint32_t active_channel_count;
+#endif
     // Threads management
 
     /* The level of parallelism refers to how much parallelization the encoder will perform
@@ -730,6 +787,8 @@ typedef struct EbSvtAv1EncConfiguration {
      */
     uint32_t level_of_parallelism;
 
+#if CLN_REMOVE_SS_PIN
+#if !SVT_AV1_CHECK_VERSION(4, 0, 0) // to be deprecated in v4.0
     /* Pin the execution of threads to the first N logical processors.
      * 0: unpinned
      * N: Pin threads to socket's first N processors
@@ -745,6 +804,24 @@ typedef struct EbSvtAv1EncConfiguration {
      *
      * Default is -1. */
     int32_t target_socket;
+#endif
+#else
+    /* Pin the execution of threads to the first N logical processors.
+     * 0: unpinned
+     * N: Pin threads to socket's first N processors
+     * default 0 */
+    uint32_t pin_threads;
+
+    /* Target socket to run on. For dual socket systems, this can specify which
+     * socket the encoder runs on.
+     *
+     * -1 = Both Sockets.
+     *  0 = Socket 0.
+     *  1 = Socket 1.
+     *
+     * Default is -1. */
+    int32_t target_socket;
+#endif
 
     /* CPU FLAGS to limit assembly instruction set used by encoder.
     * Default is EB_CPU_FLAGS_ALL. */
