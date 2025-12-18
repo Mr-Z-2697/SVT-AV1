@@ -122,6 +122,7 @@ extern "C" {
 #define OPT_LPD0_PER_BLK            1 // Skip sub-depth processing when the block is classified as non-edge
 #define OPT_PD0_SRC_SAMPLES         1 // Use source samples instead of reconstructed samples for INTRA prediction of PD0 in I_SLICE to avoid inverse transform and neighbor array updates for reconstructed samples
 #define TUNE_STILL_IMAGE            1 // Tune still image presets
+#define TUNE_M7_M8_STILL_IMAGE      1 // Tune M7 and M8 for still image
 //FOR DEBUGGING - Do not remove
 #define LOG_ENC_DONE            0 // log encoder job one
 #define DEBUG_TPL               0 // Prints to debug TPL

@@ -1596,7 +1596,11 @@ static uint8_t svt_aom_get_wn_filter_level(EncMode enc_mode, uint8_t input_resol
         if (enc_mode <= ENC_M1)
 #endif
             wn_filter_lvl = 3;
+#if TUNE_M7_M8_STILL_IMAGE
+        else if (enc_mode <= ENC_M7)
+#else
         else if (enc_mode <= ENC_M6)
+#endif
             wn_filter_lvl = 4;
 #else
         if (enc_mode <= ENC_MR)
@@ -5922,7 +5926,11 @@ void svt_aom_get_intra_mode_levels(EncMode enc_mode, uint32_t input_resolution, 
                 intra_level                = 1;
                 dist_based_ang_intra_level = 0;
 #if TUNE_STILL_IMAGE
+#if TUNE_M7_M8_STILL_IMAGE
+            } else if (enc_mode <= ENC_M6) {
+#else
             } else if (enc_mode <= ENC_M7) {
+#endif
 #else
 #if TUNE_STILL_IMAGE_2
             } else if (enc_mode <= ENC_M6) {
@@ -5932,6 +5940,11 @@ void svt_aom_get_intra_mode_levels(EncMode enc_mode, uint32_t input_resolution, 
 #endif
                 intra_level                = 2;
                 dist_based_ang_intra_level = 0;
+#if TUNE_M7_M8_STILL_IMAGE
+            } else if (enc_mode <= ENC_M7) {
+                intra_level                = 4;
+                dist_based_ang_intra_level = 0;
+#endif
             } else if (enc_mode <= ENC_M10) {
 #if OPT_INTRA_MODE_PRUNE //
                 intra_level = 7;
@@ -9468,7 +9481,11 @@ uint8_t svt_aom_get_chroma_level(EncMode enc_mode, const uint8_t is_islice) {
 #endif
 #endif
 #if TUNE_STILL_IMAGE
+#if TUNE_M7_M8_STILL_IMAGE
+        else if (enc_mode <= ENC_M7)
+#else
         else if (enc_mode <= ENC_M8)
+#endif
 #else
 #if TUNE_STILL_IMAGE_1
 #if TUNE_STILL_IMAGE_2
@@ -10686,7 +10703,11 @@ void svt_aom_sig_deriv_mode_decision_config(SequenceControlSet *scs, PictureCont
             if (enc_mode <= ENC_M3) {
                 pcs->txs_level = 2;
 #if TUNE_STILL_IMAGE_1
+#if TUNE_M7_M8_STILL_IMAGE
+            } else if (enc_mode <= ENC_M7) {
+#else
             } else if (enc_mode <= ENC_M8) {
+#endif
 #else
             } else if (enc_mode <= ENC_M7) {
 #endif
