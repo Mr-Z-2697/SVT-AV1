@@ -10355,7 +10355,11 @@ void svt_aom_sig_deriv_mode_decision_config(SequenceControlSet *scs, PictureCont
             else if (enc_mode <= ENC_M8)
 #endif
                 pcs->txt_level = 4;
+#if TUNE_M9_M10_STILL_IMAGE
+            else if (enc_mode <= ENC_M8)
+#else
             else if (enc_mode <= ENC_M9)
+#endif
                 pcs->txt_level = 6;
 #else
             else if (enc_mode <= ENC_M9)
@@ -10737,7 +10741,11 @@ void svt_aom_sig_deriv_mode_decision_config(SequenceControlSet *scs, PictureCont
 #endif
                 pcs->txs_level = 3;
 #if TUNE_STILL_IMAGE
+#if TUNE_M9_M10_STILL_IMAGE
+            } else if (enc_mode <= ENC_M9) {
+#else
             } else if (enc_mode <= ENC_M10) {
+#endif
                 pcs->txs_level = 4;
             } else {
                 pcs->txs_level = 5;

@@ -126,6 +126,7 @@ extern "C" {
 #define OPT_FD1_FD2_STILL_IMAGE     1 // optimize M10, M11, and M12 FD1 and FD2 in still-image mode
 #define DIS_SC_ALL_INTRA            1 // Force screen-content detection OFF when allintra
 #define OPT_CHROMA_CFL_LVLS         1 // reverse chroma and cfl levels for M4/M5 and M7-M9 to match v3.1.2 levels.
+#define TUNE_M9_M10_STILL_IMAGE     1 // Tune M9 and M10 for still image
 
 //FOR DEBUGGING - Do not remove
 #define LOG_ENC_DONE            0 // log encoder job one
