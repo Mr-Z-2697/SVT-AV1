@@ -127,6 +127,8 @@ extern "C" {
 #define DIS_SC_ALL_INTRA            1 // Force screen-content detection OFF when allintra
 #define OPT_CHROMA_CFL_LVLS         1 // reverse chroma and cfl levels for M4/M5 and M7-M9 to match v3.1.2 levels.
 #define TUNE_M9_M10_STILL_IMAGE     1 // Tune M9 and M10 for still image
+#define TUNE_M12_M4_STILL_IMAGE     1 // Tune M12 to M4 for still image
+#define TUNE_M1_STILL_IMAGE         1 // Tune M1 for still image
 
 //FOR DEBUGGING - Do not remove
 #define LOG_ENC_DONE            0 // log encoder job one

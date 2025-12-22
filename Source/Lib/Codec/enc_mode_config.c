@@ -2300,7 +2300,11 @@ void svt_aom_sig_deriv_multi_processes(SequenceControlSet *scs, PictureParentCon
 #endif
                 cdef_search_level = 5;
 #if TUNE_STILL_IMAGE
+#if TUNE_M12_M4_STILL_IMAGE
+            else if (enc_mode <= ENC_M10)
+#else
             else if (enc_mode <= ENC_M11)
+#endif
 #else
 #if TUNE_STILL_IMAGE_2
             else if (enc_mode <= ENC_M10)
@@ -4967,7 +4971,11 @@ uint8_t svt_aom_get_nic_level(SequenceControlSet *scs, EncMode enc_mode, uint8_t
             if (enc_mode <= ENC_MR)
                 nic_level = 2;
 #if TUNE_STILL_IMAGE_2
+#if TUNE_M1_STILL_IMAGE
+            else if (enc_mode <= ENC_M1)
+#else
             else if (enc_mode <= ENC_M0)
+#endif
                 nic_level = 3;
 #if TUNE_STILL_IMAGE
             else if (enc_mode <= ENC_M2)
@@ -5972,8 +5980,13 @@ void svt_aom_get_intra_mode_levels(EncMode enc_mode, uint32_t input_resolution, 
                 dist_based_ang_intra_level = 0;
 #if TUNE_M7_M8_STILL_IMAGE
             } else if (enc_mode <= ENC_M7) {
+#if TUNE_M12_M4_STILL_IMAGE
+                intra_level                = 5;
+                dist_based_ang_intra_level = 0;
+#else
                 intra_level                = 4;
                 dist_based_ang_intra_level = 0;
+#endif
 #endif
             } else if (enc_mode <= ENC_M10) {
 #if OPT_INTRA_MODE_PRUNE //
@@ -8127,7 +8140,11 @@ void svt_aom_sig_deriv_enc_dec_light_pd0(SequenceControlSet *scs, PictureControl
 #if OPT_LPD0_PER_BLK
     uint8_t var_skip_sub_depth_lvl;
     if (allintra) {
+#if TUNE_M12_M4_STILL_IMAGE
+        if (pcs->enc_mode <= ENC_M12)
+#else
         if (pcs->enc_mode <= ENC_M11)
+#endif
             var_skip_sub_depth_lvl = 0;
         else
             var_skip_sub_depth_lvl = 1;
@@ -9073,7 +9090,11 @@ uint8_t svt_aom_get_nsq_geom_level(EncMode enc_mode, uint8_t is_base, InputCoeff
                 else // regular or low
                     nsq_geom_level = 1;
 #if TUNE_STILL_IMAGE
+#if TUNE_M12_M4_STILL_IMAGE
+            } else if (enc_mode <= ENC_M3) {
+#else
             } else if (enc_mode <= ENC_M4) {
+#endif
 #else
 #if TUNE_STILL_IMAGE_1
 #if TUNE_STILL_IMAGE_2
@@ -9090,7 +9111,11 @@ uint8_t svt_aom_get_nsq_geom_level(EncMode enc_mode, uint8_t is_base, InputCoeff
                 else // regular or low
                     nsq_geom_level = 2;
 #if TUNE_STILL_IMAGE
+#if TUNE_M12_M4_STILL_IMAGE
+            } else if (enc_mode <= ENC_M7) {
+#else
             } else if (enc_mode <= ENC_M6) {
+#endif
                 if (coeff_lvl == HIGH_LVL)
                     nsq_geom_level = 4;
                 else // regular or low
@@ -9188,7 +9213,11 @@ uint8_t svt_aom_get_nsq_search_level(PictureControlSet *pcs, EncMode enc_mode, I
 #endif
 #if TUNE_STILL_IMAGE_1
 #if TUNE_STILL_IMAGE_2
+#if TUNE_M1_STILL_IMAGE
+            } else if (enc_mode <= ENC_M0) {
+#else
             } else if (enc_mode <= ENC_M1) {
+#endif
 #else
             } else if (enc_mode <= ENC_M2) {
 #endif
@@ -9445,7 +9474,11 @@ uint8_t svt_aom_get_update_cdf_level(EncMode enc_mode, SliceType is_islice, uint
             if (enc_mode <= ENC_M3)
                 update_cdf_level = 1;
 #if TUNE_STILL_IMAGE
+#if TUNE_M12_M4_STILL_IMAGE
+            else if (enc_mode <= ENC_M8)
+#else
             else if (enc_mode <= ENC_M9)
+#endif
                 update_cdf_level = 2;
 #else
 #if TUNE_STILL_IMAGE_1
@@ -9503,7 +9536,11 @@ uint8_t svt_aom_get_chroma_level(EncMode enc_mode, const uint8_t is_islice) {
         if (enc_mode <= ENC_MR)
             chroma_level = 1;
 #if TUNE_STILL_IMAGE_2
+#if TUNE_M1_STILL_IMAGE
+        else if (enc_mode <= ENC_M1)
+#else
         else if (enc_mode <= ENC_M0)
+#endif
 #if TUNE_STILL_IMAGE
             chroma_level = 2;
 #else
@@ -9582,7 +9619,11 @@ static void set_pic_lpd0_lvl(PictureControlSet *pcs, EncMode enc_mode) {
 #if TUNE_STILL_IMAGE_0
     if (pcs->scs->allintra) {
 #if TUNE_STILL_IMAGE
+#if TUNE_M1_STILL_IMAGE
+        if (enc_mode <= ENC_M0) {
+#else
         if (enc_mode <= ENC_M1) {
+#endif
             pcs->pic_lpd0_lvl = 0;
         } else if (enc_mode <= ENC_M9) {
             pcs->pic_lpd0_lvl = 1;
@@ -10564,7 +10605,11 @@ void svt_aom_sig_deriv_mode_decision_config(SequenceControlSet *scs, PictureCont
 #endif
 #endif
 #if TUNE_STILL_IMAGE
+#if TUNE_M12_M4_STILL_IMAGE
+            else if (enc_mode <= ENC_M9)
+#else
             else if (enc_mode <= ENC_M10)
+#endif
                 pcs->cfl_level = 5;
             else
                 pcs->cfl_level = 0;
