@@ -2300,11 +2300,7 @@ void svt_aom_sig_deriv_multi_processes(SequenceControlSet *scs, PictureParentCon
 #endif
                 cdef_search_level = 5;
 #if TUNE_STILL_IMAGE
-#if TUNE_M12_M4_STILL_IMAGE
-            else if (enc_mode <= ENC_M10)
-#else
             else if (enc_mode <= ENC_M11)
-#endif
 #else
 #if TUNE_STILL_IMAGE_2
             else if (enc_mode <= ENC_M10)
