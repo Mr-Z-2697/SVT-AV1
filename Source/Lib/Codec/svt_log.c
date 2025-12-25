@@ -16,57 +16,77 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #if !CONFIG_LOG_QUIET
 
-static SvtLogLevel g_log_level;
-static FILE*       g_log_file;
-
-static void svt_log_set_level(SvtLogLevel level) { g_log_level = level; }
-
-static void svt_log_set_log_file(const char* file) {
-    if (file)
-        g_log_file = fopen(file, "w+");
-}
-
-void svt_log_init() {
-    const char* log   = getenv("SVT_LOG");
-    SvtLogLevel level = SVT_LOG_INFO;
-    if (log)
-        level = (SvtLogLevel)atoi(log);
-    svt_log_set_level(level);
-
-    if (!g_log_file) {
-        const char* file = getenv("SVT_LOG_FILE");
-        svt_log_set_log_file(file);
-    }
-}
-
-static const char* log_level_str(SvtLogLevel level) {
+static const char* log_level_str(SvtAv1LogLevel level) {
     switch (level) {
-    case SVT_LOG_FATAL: return "fatal";
-    case SVT_LOG_ERROR: return "error";
-    case SVT_LOG_WARN: return "warn";
-    case SVT_LOG_INFO: return "info";
-    case SVT_LOG_DEBUG: return "debug";
+    case SVT_AV1_LOG_FATAL: return "fatal";
+    case SVT_AV1_LOG_ERROR: return "error";
+    case SVT_AV1_LOG_WARN: return "warn";
+    case SVT_AV1_LOG_INFO: return "info";
+    case SVT_AV1_LOG_DEBUG: return "debug";
     default: return "unknown";
     }
 }
 
-void svt_log(SvtLogLevel level, const char* tag, const char* format, ...) {
-    if (level > g_log_level)
+struct DefaultLoggerCtx {
+    SvtAv1LogLevel level;
+    FILE*          file;
+};
+
+static void default_logger(SvtAv1LogLevel level, const char* tag, const char* message, void* context) {
+    struct DefaultLoggerCtx* ctx = context;
+    if (level > ctx->level)
         return;
-
-    if (!g_log_file)
-        g_log_file = stderr;
-
     if (tag)
-        fprintf(g_log_file, "%s[%s]: ", tag, log_level_str(level));
+        fprintf(ctx->file, "%s[%s]: ", tag, log_level_str(level));
 
+    fprintf(ctx->file, "%s", message);
+}
+
+static struct DefaultLoggerCtx g_default_logger_ctx = {SVT_AV1_LOG_INFO, NULL};
+
+void svt_log_init() {
+    const char* log = getenv("SVT_LOG");
+    if (log)
+        g_default_logger_ctx.level = (SvtAv1LogLevel)atoi(log);
+
+    const char* file = getenv("SVT_LOG_FILE");
+    if (file)
+        g_default_logger_ctx.file = fopen(file, "w+");
+    else
+        g_default_logger_ctx.file = stderr;
+}
+
+static SvtAv1LogCallback g_log_callback         = default_logger;
+static void*             g_log_callback_context = &g_default_logger_ctx;
+
+void svt_aom_log_set_callback(SvtAv1LogCallback callback, void* context) {
+    // We only want to allow using a custom context if a custom callback is provided.
+    // Otherwise the context for the default logger will be incorrect.
+    // This will still allow passing NULL for context in case the callback doesn't use it.
+    if (callback) {
+        g_log_callback         = callback;
+        g_log_callback_context = context;
+    } else {
+        g_log_callback         = default_logger;
+        g_log_callback_context = &g_default_logger_ctx;
+    }
+}
+
+void svt_log(SvtAv1LogLevel level, const char* tag, const char* format, ...) {
+    char    buffer[2048];
     va_list args;
     va_start(args, format);
-    vfprintf(g_log_file, format, args);
+    int size = vsnprintf(buffer, sizeof(buffer), format, args);
+    if (size < 0 || (size_t)size >= sizeof(buffer)) {
+        // Message was truncated or encoding error occurred
+        strcpy(buffer + sizeof(buffer) - 5, "...");
+    }
     va_end(args);
+    g_log_callback(level, tag, buffer, g_log_callback_context);
 }
 
 #endif //CONFIG_LOG_QUIET
