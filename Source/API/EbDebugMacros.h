@@ -134,6 +134,7 @@ extern "C" {
 #define TUNE_M7_RA_FIX_REG          1 // Reversing adoptions to fix M7 RA regression compared to v3.1.0
 #define TUNE_M8_RA_FIX_REG          1 // Reversing adoptions to fix M8 RA regression compared to v3.1.0
 #define TUNE_M9_RA_FIX_REG          1 // Reversing adoptions to fix M9 RA regression compared to v3.1.0
+#define OPT_REVERSE_6L_TO_5L        1 // Reversing OPT_DEFAULT_6L macro
 
 //FOR DEBUGGING - Do not remove
 #define LOG_ENC_DONE            0 // log encoder job one

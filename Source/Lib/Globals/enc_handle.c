@@ -4807,7 +4807,7 @@ static void copy_api_from_app(SequenceControlSet *scs, EbSvtAv1EncConfiguration 
             2 :
             scs->static_config.pred_structure == LOW_DELAY ?
             3 :
-#if OPT_DEFAULT_6L
+#if OPT_DEFAULT_6L && !OPT_REVERSE_6L_TO_5L
             scs->static_config.rate_control_mode == SVT_AV1_RC_MODE_VBR || scs->static_config.rate_control_mode == SVT_AV1_RC_MODE_CBR ||
             (input_resolution >= INPUT_SIZE_4K_RANGE && scs->static_config.enc_mode >= ENC_M8) || input_resolution >= INPUT_SIZE_8K_RANGE
 #else
