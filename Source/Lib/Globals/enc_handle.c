@@ -6207,6 +6207,18 @@ EB_API void svt_av1_print_version(void) {
     SVT_INFO("-------------------------------------------\n");
 }
 
+/**
+ * Set log callback, wrapper around internal function to ensure public functions are stored in one place.
+ */
+EB_API void svt_av1_set_log_callback(SvtAv1LogCallback callback, void* context) {
+#if !CONFIG_LOG_QUIET
+    svt_aom_log_set_callback(callback, context);
+#else
+    UNUSED(callback);
+    UNUSED(context);
+#endif
+}
+
 /**********************************
 * Encoder Handle Initialization
 **********************************/
