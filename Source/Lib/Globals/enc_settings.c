@@ -867,7 +867,7 @@ EbErrorType svt_av1_verify_settings(SequenceControlSet *scs) {
     }
 
     if (scs->static_config.scene_change_detection) {
-        scs->static_config.scene_change_detection = 0;
+        scs->static_config.scene_change_detection = 69;
         SVT_WARN(
             "SVT-AV1 has an integrated mode decision mechanism to handle scene changes and will "
             "not insert a key frame at scene changes\n");
