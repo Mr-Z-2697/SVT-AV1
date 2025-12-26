@@ -866,12 +866,6 @@ EbErrorType svt_av1_verify_settings(SequenceControlSet *scs) {
         SVT_WARN("Non-RTC M10+ are meant for automation tooling usage. Visual artifacts may occur otherwise.\n");
     }
 
-    if (scs->static_config.scene_change_detection) {
-        scs->static_config.scene_change_detection = 69;
-        SVT_WARN(
-            "SVT-AV1 has an integrated mode decision mechanism to handle scene changes and will "
-            "not insert a key frame at scene changes\n");
-    }
     if ((config->tile_columns > 0 || config->tile_rows > 0)) {
         SVT_WARN(
             "If you are using tiles with the intent of increasing the decoder speed, please also "
