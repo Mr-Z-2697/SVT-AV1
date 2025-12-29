@@ -855,7 +855,7 @@ ConfigDescription config_entry_intra_refresh[] = {
      "GOP size (frames), default is -2 [-2: ~5 seconds, -1: \"infinite\" and only applicable for "
      "CRF, 0: same as -1]"},
     {INTRA_REFRESH_TYPE_TOKEN, "Intra refresh type, default is 2 [1: FWD Frame (Open GOP), 2: KEY Frame (Closed GOP)]"},
-    {SCENE_CHANGE_DETECTION_TOKEN, "Scene change detection control, default is 0 [0-1]"},
+    {SCENE_CHANGE_DETECTION_TOKEN, "Scene change detection control, default is 1 [0-1]"},
     {LOOKAHEAD_NEW_TOKEN,
      "Number of frames in the future to look ahead, not including minigop, temporal filtering, and "
      "rate control, default is -1 [-1: auto, 0-120]"},
